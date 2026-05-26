@@ -175,6 +175,37 @@ impl Utils {
         Ok(())
     }
 
+    /// Validates a project name field with comprehensive checks:
+    /// - Not empty or whitespace-only
+    /// - Within maximum length constraint (MAX_NAME_LEN)
+    /// - Only alphanumeric characters, underscores, and hyphens allowed
+    pub fn validate_project_name(name: &String) -> Result<(), ContractError> {
+        extern crate alloc;
+        use alloc::string::ToString;
+
+        let name_str = name.to_string();
+
+        // 1. Validate non-empty and not only whitespace
+        if name_str.trim().is_empty() {
+            return Err(ContractError::InvalidProjectData);
+        }
+
+        // 2. Validate max length using the CONSTANT
+        let max_len = crate::constants::MAX_NAME_LEN;
+        if name_str.len() > max_len {
+            return Err(ContractError::ProjectNameTooLong);
+        }
+
+        // 3. Validate alphanumeric, underscore, hyphen only
+        for c in name_str.chars() {
+            if !c.is_ascii_alphanumeric() && c != '_' && c != '-' {
+                return Err(ContractError::InvalidProjectNameFormat);
+            }
+        }
+
+        Ok(())
+    }
+
     /// Validates a description field with comprehensive checks:
     /// - Not empty or whitespace-only
     /// - Within maximum length constraint (MAX_DESCRIPTION_LEN)

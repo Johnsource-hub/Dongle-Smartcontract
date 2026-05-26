@@ -20,10 +20,8 @@ impl ProjectRegistry {
         // Validation phase
         params.owner.require_auth();
 
-        // Validate inputs - return typed errors instead of panicking
-        if params.name.is_empty() {
-            return Err(ContractError::InvalidProjectData);
-        }
+        // Validate project name with comprehensive checks
+        Utils::validate_project_name(&params.name)?;
 
         // Validate description with comprehensive checks
         Utils::validate_description(&params.description)?;
@@ -134,9 +132,8 @@ impl ProjectRegistry {
 
         // Validate and update fields
         if let Some(value) = params.name {
-            if value.is_empty() {
-                return Err(ContractError::InvalidProjectName);
-            }
+            // Validate project name with comprehensive checks
+            Utils::validate_project_name(&value)?;
 
             // Check if new name is different from current name
             if value != old_name {
